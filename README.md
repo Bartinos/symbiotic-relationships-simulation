@@ -1,6 +1,6 @@
 # symbiotic-relationships-simulation
 
-This project an Agent Based Modeling solution for the course Multi Agent Systems at Tilburg University. The model aims to explore how symbiotic relationships, such as the mutualistic/commensal spider-frog relationship, are formed.
+This project is an Agent Based Modeling solution for the course Multi Agent Systems at Tilburg University. The model aims to explore how symbiotic relationships, such as the mutualistic/commensal spider-frog relationship, are formed.
 
 ## Preparation to run the model
 
