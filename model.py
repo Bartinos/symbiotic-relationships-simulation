@@ -12,7 +12,6 @@ class SymbioticRelationshipsModel(Model):
         self,
         grid_size=32,
         initial_frogs=10,
-        # initial_spiders=10,
         initial_ants=10,
         initial_snakes=10,
         mutation_rate=0.5,
@@ -40,8 +39,8 @@ class SymbioticRelationshipsModel(Model):
         # Create grid using experimental cell space
         self.grid = OrthogonalMooreGrid(
             [self.height, self.width],
-            torus=False,  # Decide upon this!?
-            capacity=math.inf,  #
+            torus=False,  
+            capacity=math.inf,  
             random=self.random,
         )
         
@@ -69,13 +68,6 @@ class SymbioticRelationshipsModel(Model):
                 ny = y - self.spider_nest_size // 2
                 self.spider_nests[f"nest{nest_count}"] = (nx, ny)
 
-        # self.spider_nests = {
-        #               "nest1": (4, 4),
-        #               "nest2": (4, 26),
-        #               "nest3": (26, 4),
-        #               "nest4": (26, 26),
-        # }
-
         for cell in self.grid.all_cells.cells:
             x, y = cell.coordinate
 
@@ -97,7 +89,7 @@ class SymbioticRelationshipsModel(Model):
         for nest_name, nest_location in self.spider_nests.items():
             Spider.create_agents(
                 self,
-                1,  # Spider amount
+                1,  
                 nest=(nest_name, nest_location),
                 cell=self.random.choices(
                     [
@@ -107,7 +99,7 @@ class SymbioticRelationshipsModel(Model):
                         and cell.coordinate[1] == nest_location[1] + 1
                     ],
                     k=1,
-                ),  # This can't be right btw,
+                ), 
                 p_reproduce=p_reproduce_spider,
             )
 
@@ -135,30 +127,24 @@ class SymbioticRelationshipsModel(Model):
 
         Frog.create_agents(
             self,
-            initial_frogs,  # frog amount
+            initial_frogs,  
             cell=self.random.choices(self.grid.all_cells.cells, k=initial_frogs),
             p_reproduce=p_reproduce_frog,
         )
 
         Snake.create_agents(
             self,
-            initial_snakes,  # Snake amount
+            initial_snakes, 
             cell=self.random.choices(self.grid.all_cells.cells, k=initial_snakes),
             p_reproduce=p_reproduce_snake,
         )
 
         Ant.create_agents(
             self,
-            initial_ants,  # Ant amount
+            initial_ants,  
             cell=self.random.choices(self.grid.all_cells.cells, k=initial_ants),
             p_reproduce=p_reproduce_ant,
         )
-
-        # Egg.create_agents(
-        #     self,
-        #     1, # Ant amount
-        #     cell=self.random.choices(self.grid.all_cells.cells, k=1),
-        # )
 
         # Collect initial data
         self.running = True
@@ -184,6 +170,6 @@ class SymbioticRelationshipsModel(Model):
         # Spawn ants every 2 ticks
         if self.steps % 2 == 0:
             Ant.create_agents(
-                self, self.ant_spawn_rate, cell=self.random.choices(self.grid.all_cells.cells, k=self.ant_spawn_rate)  # Ant amount
-            )  # Might spawn at unlucky place (against nest), will that be a problem?!?!
+                self, self.ant_spawn_rate, cell=self.random.choices(self.grid.all_cells.cells, k=self.ant_spawn_rate)  
+            )  
        

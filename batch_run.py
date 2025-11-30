@@ -17,15 +17,15 @@ if __name__ == '__main__':
         "ant_spawn_rate": [6, 8, 10, 12, 14, 16]
     }
 
-    # Run you parameter sweep experiment here
+    # We do a parameter sweep here
     resultsEXPERIMENT1_1seed = batch_run(
         SymbioticRelationshipsModel,
         parameters=params,
-        iterations=1, # we now explicitly set seeds to run through
+        iterations=1, 
         max_steps=1500,
         
-        number_processes=None, # Use all threads
-        data_collection_period=1,  # Need to collect every step
+        number_processes=None, # We use all the threads
+        data_collection_period=1,  # We make sure to collect data every step
         display_progress=True,
     )
 
