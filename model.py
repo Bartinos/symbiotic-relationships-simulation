@@ -1,0 +1,177 @@
+from mesa import Model
+from mesa.datacollection import DataCollector
+from mesa.experimental.devs import ABMSimulator
+from mesa.discrete_space import OrthogonalMooreGrid
+import math
+import numpy as np
+from agents import *
+
+
+class SymbioticRelationshipsModel(Model):
+    def __init__(
+        self,
+        grid_size=32,#This is the grid size of our model
+        initial_frogs=10, #The starting amount of frogs ants and snakes, spiders are based on nest density and grid size
+        initial_ants=10,
+        initial_snakes=10,
+        mutation_rate=0.5,#The chance of mutation when a new agent is reproduced
+        nest_density=0.75,#This value changes the number of nests on the grid
+        seed=None, #set the seed to guarantee the same result
+        rng=None, #Creates a numpy random generator
+        p_reproduce_ant=0.04, #The chance of reproduction for our agents are all set to 0.04 by default
+        p_reproduce_snake=0.04,
+        p_reproduce_frog=0.04,
+        p_reproduce_spider=0.04,
+        ant_spawn_rate = 2, #The amount of ants we spawn into the model
+        simulator: ABMSimulator = None, #Our Agent based model simulator
+    ):
+        super().__init__(seed=seed, rng=rng)
+        self.ant_spawn_rate = ant_spawn_rate #sets parameters like ant spawnrate and sumlator
+        if simulator is None:
+            simulator = ABMSimulator()
+
+        self.simulator = simulator
+        self.simulator.setup(self)
+
+        self.height = grid_size
+        self.width = grid_size
+        nest_density = 1 - nest_density
+        # Create grid using experimental cell space
+        self.grid = OrthogonalMooreGrid(
+            [self.height, self.width],
+            torus=False,  #We want to illustrate a real world environment so we chose to keep torus on false which lets nests in corners thrive
+            capacity=math.inf, #Spiders need to be able to move over their nests
+            random=self.random,
+        )
+        
+        # Create nest zone mapping for tracking
+        self.zones = {}
+
+        self.spider_nests = {}
+        self.spider_nest_size = 3
+
+        margin = self.spider_nest_size  # distance from walls to keep free
+        x0 = margin
+        y0 = margin
+        x1 = self.width - margin
+        y1 = self.height - margin
+        dx = int(self.width * nest_density)
+        dy = int(self.height * nest_density)
+
+        nest_count = 0
+        #Store nests in dictionary so we can track where each nest is located
+        for x in range(x0, x1, dx):
+            for y in range(y0, y1, dy):
+                nest_count += 1
+
+                nx = x - self.spider_nest_size // 2
+                ny = y - self.spider_nest_size // 2
+                self.spider_nests[f"nest{nest_count}"] = (nx, ny)
+        
+        for cell in self.grid.all_cells.cells:
+            x, y = cell.coordinate
+
+            # Mark spider nests
+            for nest_name, nest_location in self.spider_nests.items():
+                start_nest_x = nest_location[0]
+                end_nest_x = nest_location[0] + self.spider_nest_size
+                start_nest_y = nest_location[1]
+                end_nest_y = nest_location[1] + self.spider_nest_size
+                if (
+                    x >= start_nest_x
+                    and x < end_nest_x
+                    and y >= start_nest_y
+                    and y < end_nest_y
+                ):
+                    self.zones[(x, y)] = nest_name
+
+        # Spawn spiders on their nests
+        for nest_name, nest_location in self.spider_nests.items():
+            Spider.create_agents(
+                self,
+                1,  
+                nest=(nest_name, nest_location),
+                cell=self.random.choices(
+                    [
+                        cell
+                        for cell in self.grid.all_cells.cells
+                        if cell.coordinate[0] == nest_location[0] + 1
+                        and cell.coordinate[1] == nest_location[1] + 1
+                    ],
+                    k=1,
+                ), 
+                p_reproduce=p_reproduce_spider,
+            )
+
+        # Set up data collection
+        model_reporters = {
+            "Spiders": lambda m: len(m.agents_by_type[Spider]),
+            "Frogs": lambda m: len(m.agents_by_type[Frog]),
+            "Ants": lambda m: len(m.agents_by_type[Ant]),
+            "Snakes": lambda m: len(m.agents_by_type[Snake]),
+            "Spider_Symb_Val": lambda m: np.mean(
+                np.fromiter(
+                    (spider.symbiotic_property for spider in m.agents_by_type[Spider]), #calculates average symbiotic property
+                    dtype=float,
+                )
+            ),
+            "Frog_Symb_Val": lambda m: np.mean(
+                np.fromiter(
+                    (frog.symbiotic_property for frog in m.agents_by_type[Frog]),
+                    dtype=float,
+                )
+            ),
+        }
+
+        self.datacollector = DataCollector(model_reporters)
+
+        Frog.create_agents( #spawn agents on grid
+            self,
+            initial_frogs,  
+            cell=self.random.choices(self.grid.all_cells.cells, k=initial_frogs),
+            p_reproduce=p_reproduce_frog,
+            # symbiotic_property = self.random.random()*2-1 
+            symbiotic_property = 0
+        )
+
+        Snake.create_agents(
+            self,
+            initial_snakes, 
+            cell=self.random.choices(self.grid.all_cells.cells, k=initial_snakes),
+            p_reproduce=p_reproduce_snake,
+        )
+
+        Ant.create_agents(
+            self,
+            initial_ants,  
+            cell=self.random.choices(self.grid.all_cells.cells, k=initial_ants),
+            p_reproduce=p_reproduce_ant,
+        )
+
+        # Collect initial data
+        self.running = True
+        self.datacollector.collect(self)
+    #returns if there is a nest on the current coordinate and which one it is
+    def get_zone_at(self, x, y):
+        return self.zones.get((x, y), "unmarked")
+
+    def step(self): #Activates the step sequence
+        """Execute one step of the model."""
+        self.agents_by_type[Ant].shuffle_do("step")
+        self.agents_by_type[Snake].shuffle_do("step")
+        self.agents_by_type[Frog].shuffle_do("step")
+        self.agents_by_type[Spider].shuffle_do("step")
+        try:#Only activates if there is an egg on the grid
+            self.agents_by_type[SpiderEgg].shuffle_do("step")
+        except:
+            pass
+
+        # Collect data
+        self.datacollector.collect(self)
+
+        # Spawn ants every 2 ticks
+        if self.steps % 2 == 0:
+            Ant.create_agents(
+                self, self.ant_spawn_rate, cell=self.random.choices(self.grid.all_cells.cells, k=self.ant_spawn_rate)  
+            )  
+       
