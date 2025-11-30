@@ -10,23 +10,23 @@ from agents import *
 class SymbioticRelationshipsModel(Model):
     def __init__(
         self,
-        grid_size=32,
-        initial_frogs=10,
+        grid_size=32,#This is the grid size of our model
+        initial_frogs=10, #The starting amount of frogs ants and snakes, spiders are based on nest density and grid size
         initial_ants=10,
         initial_snakes=10,
-        mutation_rate=0.5,
-        nest_density=0.75,
-        seed=None,
-        rng=None,
-        p_reproduce_ant=0.04,
+        mutation_rate=0.5,#The chance of mutation when a new agent is reproduced
+        nest_density=0.75,#This value changes the number of nests on the grid
+        seed=None, #set the seed to guarantee the same result
+        rng=None, #Creates a numpy random generator
+        p_reproduce_ant=0.04, #The chance of reproduction for our agents are all set to 0.04 by default
         p_reproduce_snake=0.04,
         p_reproduce_frog=0.04,
         p_reproduce_spider=0.04,
-        ant_spawn_rate = 2,
-        simulator: ABMSimulator = None,
+        ant_spawn_rate = 2, #The amount of ants we spawn into the model
+        simulator: ABMSimulator = None, #Our Agent based model simulator
     ):
         super().__init__(seed=seed, rng=rng)
-        self.ant_spawn_rate = ant_spawn_rate
+        self.ant_spawn_rate = ant_spawn_rate #sets parameters like ant spawnrate and sumlator
         if simulator is None:
             simulator = ABMSimulator()
 
@@ -39,8 +39,8 @@ class SymbioticRelationshipsModel(Model):
         # Create grid using experimental cell space
         self.grid = OrthogonalMooreGrid(
             [self.height, self.width],
-            torus=False,  
-            capacity=math.inf,  
+            torus=False,  #We want to illustrate a real world environment so we chose to keep torus on false which lets nests in corners thrive
+            capacity=math.inf, #Spiders need to be able to move over their nests
             random=self.random,
         )
         
@@ -59,7 +59,7 @@ class SymbioticRelationshipsModel(Model):
         dy = int(self.height * nest_density)
 
         nest_count = 0
-
+        #Store nests in dictionary so we can track where each nest is located
         for x in range(x0, x1, dx):
             for y in range(y0, y1, dy):
                 nest_count += 1
@@ -67,7 +67,7 @@ class SymbioticRelationshipsModel(Model):
                 nx = x - self.spider_nest_size // 2
                 ny = y - self.spider_nest_size // 2
                 self.spider_nests[f"nest{nest_count}"] = (nx, ny)
-
+        
         for cell in self.grid.all_cells.cells:
             x, y = cell.coordinate
 
@@ -111,7 +111,7 @@ class SymbioticRelationshipsModel(Model):
             "Snakes": lambda m: len(m.agents_by_type[Snake]),
             "Spider_Symb_Val": lambda m: np.mean(
                 np.fromiter(
-                    (spider.symbiotic_property for spider in m.agents_by_type[Spider]),
+                    (spider.symbiotic_property for spider in m.agents_by_type[Spider]), #calculates average symbiotic property
                     dtype=float,
                 )
             ),
@@ -125,7 +125,7 @@ class SymbioticRelationshipsModel(Model):
 
         self.datacollector = DataCollector(model_reporters)
 
-        Frog.create_agents(
+        Frog.create_agents( #spawn agents on grid
             self,
             initial_frogs,  
             cell=self.random.choices(self.grid.all_cells.cells, k=initial_frogs),
@@ -149,17 +149,17 @@ class SymbioticRelationshipsModel(Model):
         # Collect initial data
         self.running = True
         self.datacollector.collect(self)
-
+    #returns if there is a nest on the current coordinate and which one it is
     def get_zone_at(self, x, y):
         return self.zones.get((x, y), "unmarked")
 
-    def step(self):
+    def step(self): #Activates the step sequence
         """Execute one step of the model."""
         self.agents_by_type[Ant].shuffle_do("step")
         self.agents_by_type[Snake].shuffle_do("step")
         self.agents_by_type[Frog].shuffle_do("step")
         self.agents_by_type[Spider].shuffle_do("step")
-        try:
+        try:#Only activates if there is an egg on the grid
             self.agents_by_type[SpiderEgg].shuffle_do("step")
         except:
             pass

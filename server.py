@@ -105,7 +105,7 @@ if __name__ == '__main__':
             "type": "InputText",
             "value": SEED,
             "label": "Random Seed",
-        },
+        }, #Creates changable sliders for the model to change certain values
         "initial_frogs": Slider("Initial Frog Population", 10, 1, 200),
         'initial_snakes': Slider("Initial Snake Population",10, 1, 200),
         "initial_ants" : Slider("Initial Ant Population",10, 1, 200),
@@ -128,17 +128,17 @@ if __name__ == '__main__':
 
     simulator = ABMSimulator() 
     model = SymbioticRelationshipsModel(seed=SEED, initial_ants=10, initial_frogs=10, initial_snakes=10, nest_density=0.20, simulator=simulator)
-
+    #Creates lineplots that are visible and collects data from the model
     lineplot_component = make_plot_component(
         {"Frogs": "tab:green", "Spiders": "tab:brown","Snakes": "tab:orange","Ants":"tab:red"},
         post_process=post_process_lines,
     )
-
+    
     lineplot_component2 = make_plot_component(
         {"Frog_Symb_Val": "tab:green", "Spider_Symb_Val": "tab:brown"},
         post_process=post_process_lines,
     )
-
+    #Uses Solarviz so the lineplots are visible
     page = SolaraViz(
         model,
         # components=[space_component, lineplot_component, CommandConsole],

@@ -8,7 +8,7 @@ import os
 
 if __name__ == '__main__':
 
-    params = {
+    params = {#We set our parameters
         "initial_frogs": [50, 80, 100],
         "initial_snakes": [5, 30, 100],
         "initial_ants": [10, 40, 100],
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     resultsEXPERIMENT1_1seed = batch_run(
         SymbioticRelationshipsModel,
         parameters=params,
-        iterations=1, 
+        iterations=1, #We set the amount of iterations and max steps
         max_steps=1500,
         
         number_processes=None, # We use all the threads
