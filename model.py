@@ -23,10 +23,11 @@ class SymbioticRelationshipsModel(Model):
         p_reproduce_snake=0.04,
         p_reproduce_frog=0.04,
         p_reproduce_spider=0.04,
+        ant_spawn_rate = 2,
         simulator: ABMSimulator = None,
     ):
         super().__init__(seed=seed, rng=rng)
-
+        self.ant_spawn_rate = ant_spawn_rate
         if simulator is None:
             simulator = ABMSimulator()
 
@@ -179,9 +180,10 @@ class SymbioticRelationshipsModel(Model):
 
         # Collect data
         self.datacollector.collect(self)
-
+        print(self.ant_spawn_rate)
         # Spawn ants every 2 ticks
         if self.steps % 2 == 0:
             Ant.create_agents(
-                self, 1, cell=self.grid.select_random_empty_cell()  # Ant amount
+                self, self.ant_spawn_rate, cell=self.random.choices(self.grid.all_cells.cells, k=self.ant_spawn_rate)  # Ant amount
             )  # Might spawn at unlucky place (against nest), will that be a problem?!?!
+       

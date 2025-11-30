@@ -115,6 +115,7 @@ if __name__ == '__main__':
         "p_reproduce_ant" : Slider("Ant Reproduction chance",0.04, 0, 1, step=0.01),
         "grid_size" : Slider("Size of grid", 32, 32, 256, 4),
         "nest_density" : Slider("Nest density", 0.20, 0.1, 1, 0.05),
+        "ant_spawn_rate" : Slider("Ant spawn per 2 ticks", 2, 1, 10),
     }
 
     def post_process_space(ax):
