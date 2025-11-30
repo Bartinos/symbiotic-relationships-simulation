@@ -5,7 +5,7 @@ date: "2025-11-29"
 ---
 
 ```{r setup, include=FALSE}
-data = read.csv("exp.csv", header = TRUE)
+data = read.csv("output/exp.csv", header = TRUE)
 data
 ```
 
@@ -16,7 +16,7 @@ library(ggplot2)
 library(dplyr)
 data %>%
   # group_by(RunId) %>%
-  ggplot(aes(x = Step, y = Frogs, color=RunId, group=RunId)) +
+  ggplot(aes(x = Step, y = Snakes, color=RunId, group=RunId)) +
     geom_line() 
 ```
 
@@ -25,7 +25,7 @@ data %>%
 # where step == 499 -> if Frogs > 0
 data %>%
   filter(Step == 499) %>%
-    filter(Frogs > 0) %>%
+    filter(Snakes > 0) %>%
       select(where(is.numeric)) %>%
       show
       # geom_col(aes(question, mean))
