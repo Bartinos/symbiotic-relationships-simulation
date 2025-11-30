@@ -29,8 +29,20 @@ conda activate symbiotic
 pip install -r requirements.txt
 ```
 
-### To use in vscode
+## Running the model
 
-Make sure the `Jupyter` extension is installed. You can check by going to `extensions` on the left of vscode and search for `Jupyter`.
+Make sure you are in the right conda environment.
 
-If this is installed, open the notebook and in the top right corner, press `select kernel` and select the `symbiotic` environment. 
+### GUI
+To run the GUI:
+```bash
+solara run server.py
+```
+This will run a web-based GUI, allowing the user to look at the simulation and tweak the parameters.
+
+### Batch run 
+To batch run the model for analysis:
+```bash
+python batch_run.py
+```
+This will save a parametersweep output csv of the model with the parameters set in `batch_run.py`.
