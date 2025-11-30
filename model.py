@@ -160,7 +160,7 @@ class SymbioticRelationshipsModel(Model):
         self.agents_by_type[Frog].shuffle_do("step")
         self.agents_by_type[Spider].shuffle_do("step")
         try:
-            self.agents_by_type[Egg].shuffle_do("step")
+            self.agents_by_type[SpiderEgg].shuffle_do("step")
         except:
             pass
 

@@ -68,7 +68,7 @@ def CustomSpaceVisualization(model):
         ax.scatter(x + 0.5, y + 0.5, c=color, marker=marker, s=size, zorder=10, alpha=0.8)
 
     try:
-        for egg in model.agents_by_type[Egg]:
+        for egg in model.agents_by_type[SpiderEgg]:
             x, y = egg.cell.coordinate
             
             color = "tab:blue"

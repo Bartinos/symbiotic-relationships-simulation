@@ -147,14 +147,14 @@ class Spider(Animal):
             return
         
         cells_with_egg = self.cell.get_neighborhood(radius=2).select(
-            lambda cell: any(isinstance(obj, Egg) for obj in cell.agents)
+            lambda cell: any(isinstance(obj, SpiderEgg) for obj in cell.agents)
         )
         
         eggs_in_nest_amount = len(cells_with_egg.cells)
         max_eggs_in_nest = 16 # Tweak?
         
-        if eggs_in_nest_amount < max_eggs_in_nest and len([egg for egg in self.cell.agents if isinstance(egg, Egg)]) == 0:
-            Egg.create_agents(
+        if eggs_in_nest_amount < max_eggs_in_nest and len([egg for egg in self.cell.agents if isinstance(egg, SpiderEgg)]) == 0:
+            SpiderEgg.create_agents(
                 self.model,
                 1,
                 cell=self.cell,
@@ -168,7 +168,7 @@ class Ant(Animal):
     
     def move(self):
         cells_with_egg = self.cell.neighborhood.select(
-            lambda cell: any(isinstance(obj, Egg) for obj in cell.agents)
+            lambda cell: any(isinstance(obj, SpiderEgg) for obj in cell.agents)
         )
         target_cells = (
             cells_with_egg if len(cells_with_egg) > 0 else self.cell.neighborhood
@@ -305,7 +305,7 @@ class Frog(Animal):
      # --- 3) Default random radius-1 movement ---
         self.cell = self.random.choice(neighbors_r1)
 
-class Egg(CellAgent):
+class SpiderEgg(CellAgent):
     def __init__(self, model, nest,symbiotic_property, cell=None , hp = 5):
         super().__init__(model)
         self.cell = cell
