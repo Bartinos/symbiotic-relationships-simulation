@@ -130,6 +130,8 @@ class SymbioticRelationshipsModel(Model):
             initial_frogs,  
             cell=self.random.choices(self.grid.all_cells.cells, k=initial_frogs),
             p_reproduce=p_reproduce_frog,
+            # symbiotic_property = self.random.random()*2-1 
+            symbiotic_property = 0
         )
 
         Snake.create_agents(
