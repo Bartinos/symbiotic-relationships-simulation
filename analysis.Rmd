@@ -20,19 +20,77 @@ data %>%
     geom_line() 
 ```
 
+```{r, fig.height=10, fig.width=15}
+# data %>%
+#   # group_by(RunId) %>%
+#   filter(RunId == 863)%>%
+#   ggplot(aes(x = Step, color=key)) +
+#     geom_line(aes(y = Snakes )) + 
+#     geom_line(aes(y = Frogs)) + 
+#     geom_line(aes(y = Ants)) + 
+#     geom_line(aes(y = Spiders)) 
+library(tidyr)
+data %>%
+  # group_by(RunId) %>%
+  filter(RunId == 863)%>%
+  gather(key,value, Snakes, Spiders, Ants, Frogs) %>%
+    ggplot(aes(x=Step, y=value, colour=key)) +
+    # geom_line() + 
+    geom_smooth()
+
+
+```
 ```{r}
 
 # where step == 499 -> if Frogs > 0
 data %>%
-  filter(Step == 499) %>%
+  filter(Step == 1499) %>%
     filter(Snakes > 0) %>%
       select(where(is.numeric)) %>%
+      arrange(desc(Spiders)) %>%
       show
       # geom_col(aes(question, mean))
-      # summarize(avg = mean(Frog_Symb_Val)) %>%
+      # summarize(avg = mode(ant_spawn_rate)) %>%
       # # geom_bar(data=avg)
-      # show()
+      # show
 
 
 
+```
+
+
+```{r}
+
+data %>%
+  filter(Step == 1499) %>%
+  filter(Snakes > 0) %>%
+  select(ant_spawn_rate) %>%
+  mutate_at(vars(ant_spawn_rate), as.factor) %>%
+  ggplot(aes(y = ant_spawn_rate, fill = ant_spawn_rate)) +
+  geom_bar(aes()) 
+  
+  # filter(Step == 1) %>%
+  
+```
+
+```{r}
+
+data %>%
+  # group_by(RunId) %>%
+  filter(RunId == 863)%>%
+  gather(key,value, Spider_Symb_Val) %>%
+    ggplot(aes(x=Step, y=value, colour=key)) +
+    # geom_line() 
+    geom_smooth()
+
+# data %>%
+#   filter(Step == 1499) %>%
+#   filter(Snakes > 0) %>%
+#   select(ant_spawn_rate) %>%
+#   mutate_at(vars(ant_spawn_rate), as.factor) %>%
+#   ggplot(aes(y = ant_spawn_rate, fill = ant_spawn_rate)) +
+#   geom_bar(aes()) 
+  
+  # filter(Step == 1) %>%
+  
 ```

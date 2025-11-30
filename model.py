@@ -44,7 +44,7 @@ class SymbioticRelationshipsModel(Model):
             capacity=math.inf,  #
             random=self.random,
         )
-
+        
         # Create nest zone mapping for tracking
         self.zones = {}
 
@@ -180,7 +180,7 @@ class SymbioticRelationshipsModel(Model):
 
         # Collect data
         self.datacollector.collect(self)
-        print(self.ant_spawn_rate)
+
         # Spawn ants every 2 ticks
         if self.steps % 2 == 0:
             Ant.create_agents(
