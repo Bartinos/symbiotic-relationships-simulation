@@ -257,23 +257,23 @@ class Spider(Animal):
         # 0 3 5
         if (delta[0] == 0 and delta[1] == 0) or current_location[0] == 0 or current_location[0] == self.model.width-1 or current_location[1] == 0 or current_location[1] == self.model.height-1:  
             # Else we get delta (0, 0) meaning we are located at the nest or if we are at the boundary, just load new neighbors
-            target_cells = CellCollection(neighbors_cells)                       
+            target_cells = CellCollection(neighbors_cells, random=self.random)                       
         elif delta[0] < 0 and delta[1] < 0: # LEFT DOWN
-            target_cells = CellCollection([neighbors_cells[0], neighbors_cells[1], neighbors_cells[3]])
+            target_cells = CellCollection([neighbors_cells[0], neighbors_cells[1], neighbors_cells[3]], random=self.random)
         elif delta[0] < 0 and delta[1] > 0: # LEFT UP
-            target_cells = CellCollection([neighbors_cells[1], neighbors_cells[2], neighbors_cells[4]])
+            target_cells = CellCollection([neighbors_cells[1], neighbors_cells[2], neighbors_cells[4]], random=self.random)
         elif delta[0] > 0 and delta[1] > 0: # RIGHT UP           
-            target_cells = CellCollection([neighbors_cells[4], neighbors_cells[7], neighbors_cells[6]])
+            target_cells = CellCollection([neighbors_cells[4], neighbors_cells[7], neighbors_cells[6]], random=self.random)
         elif delta[0] > 0 and delta[1] < 0: # RIGHT DOWN
-            target_cells = CellCollection([neighbors_cells[6], neighbors_cells[5], neighbors_cells[3]])
+            target_cells = CellCollection([neighbors_cells[6], neighbors_cells[5], neighbors_cells[3]], random=self.random)
         elif delta[0] == 0 and delta[1] > 0: # UP
-            target_cells = CellCollection([neighbors_cells[2], neighbors_cells[4], neighbors_cells[7]])
+            target_cells = CellCollection([neighbors_cells[2], neighbors_cells[4], neighbors_cells[7]], random=self.random)
         elif delta[0] == 0 and delta[1] < 0: # DOWN
-            target_cells = CellCollection([neighbors_cells[0], neighbors_cells[5], neighbors_cells[3]])        
+            target_cells = CellCollection([neighbors_cells[0], neighbors_cells[5], neighbors_cells[3]], random=self.random)        
         elif delta[0] < 0 and delta[1] == 0: # LEFT
-            target_cells = CellCollection([neighbors_cells[0], neighbors_cells[1], neighbors_cells[2]])
+            target_cells = CellCollection([neighbors_cells[0], neighbors_cells[1], neighbors_cells[2]], random=self.random)
         elif delta[0] > 0 and delta[1] == 0: # RIGHT
-            target_cells = CellCollection([neighbors_cells[7], neighbors_cells[6], neighbors_cells[5]]) 
+            target_cells = CellCollection([neighbors_cells[7], neighbors_cells[6], neighbors_cells[5]], random=self.random) 
         return target_cells
         
 
